@@ -5,21 +5,21 @@
 
 #define AR_LEN(ar) sizeof(ar)/sizeof(ar[0])
 
-#define _NODE(name, nchildren, pchildren, orth, state) \
-    Hsmfui name = { \
+#define _NODE(name, nchildren, pchildren, orth) \
+    static Hsmfui name = { \
         #name, \
         NULL, \
         nchildren, \
         pchildren, \
         NULL, NULL, NULL, NULL, NULL, NULL, \
         orth, \
-        state \
+        NULL \
     };
 
-#define LEAF(name) _NODE(name, 0, NULL, 0, -1)
+#define LEAF(name) _NODE(name, 0, NULL, 0)
 
 #define NODE_START(name) \
-    Hsmfui * _CHILDREN_##name[] = {
+    static Hsmfui * _CHILDREN_##name[] = {
 
 #define ORTH_START(name) NODE_START(name)
 
@@ -27,11 +27,11 @@
 
 #define NODE_STOP(name) \
     }; \
-    _NODE(name, AR_LEN(_CHILDREN_##name), _CHILDREN_##name, 0, 0)
+    _NODE(name, AR_LEN(_CHILDREN_##name), _CHILDREN_##name, 0)
 
 #define ORTH_STOP(name) \
     }; \
-    _NODE(name, AR_LEN(_CHILDREN_##name), _CHILDREN_##name, 1, -1)
+    _NODE(name, AR_LEN(_CHILDREN_##name), _CHILDREN_##name, 1)
 
 typedef struct Hsmfui Hsmfui;
 typedef struct Hsmfui
@@ -52,7 +52,7 @@ typedef struct Hsmfui
 
     const int isOrth;
 
-    int state;
+    Hsmfui * state;
     
 } Hsmfui;
 

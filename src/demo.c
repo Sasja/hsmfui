@@ -29,7 +29,7 @@ NODE_START(three_a)
     CHILD(three_a_2)
 NODE_STOP(three_a)
 
-ORTH_START(three)
+ORTH_START(three)       /* ORTHOGONAL */
     CHILD(three_a)
     CHILD(three_b)
     CHILD(three_c)

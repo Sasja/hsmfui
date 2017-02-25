@@ -6,11 +6,9 @@ void hsmfui_Init( Hsmfui * hsm )
 	int i;
 	Hsmfui * child;
 
-	#ifdef DEBUG
-	/* printf("%s(&%s)\n", __FUNCTION__, hsm->name); */
-	#endif
-
 	if( hsm->Init != NULL) hsm->Init();
+
+    if( !hsm->isOrth && hsm->nChildren > 0) hsm->state = hsm->children[0];
 
 	for(i=0; i<hsm->nChildren; i++)
 	{
@@ -22,14 +20,26 @@ void hsmfui_Init( Hsmfui * hsm )
 
 void hsmfui_Act( Hsmfui * hsm )
 {
+    int i;
+	Hsmfui * child;
+
+	if( hsm->Act != NULL) hsm->Act();
+
+    if( hsm->isOrth )
+    {
+        for(i=0; i<hsm->nChildren; i++)
+        {
+            child = hsm->children[i];
+            hsmfui_Act( child );
+        }
+    }
+    else 
+    {
+        if( hsm->state != NULL ) hsmfui_Act( hsm->state );
+    }
 }
 
 void hsmfui_Exi( Hsmfui * hsm )
 {
 }
 
-
-int8_t AverageThreeBytes(int8_t a, int8_t b, int8_t c)
-{
-return (int8_t)(((int16_t)a + (int16_t)b + (int16_t)c) / 3);
-}

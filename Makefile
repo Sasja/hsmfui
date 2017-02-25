@@ -29,7 +29,7 @@ SRCT = $(wildcard $(PATHT)*.c)
 COMPILE=gcc -c
 LINK=gcc
 DEPEND=gcc -MM -MG -MF
-CFLAGS=-Wall -Werror -std=c99 -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
+CFLAGS=-Wall -Wno-unused-function -Werror -std=c99 -I. -I$(PATHU) -I$(PATHS) -DTEST
 
 
 # ============================== TARGETS ==================================
@@ -87,6 +87,7 @@ $(PATHR)%.txt: $(PATHB)%.$(TARGET_EXTENSION)
 
 RESULTS = $(patsubst $(PATHT)Test%.c,$(PATHR)Test%.txt,$(SRCT))
 test: $(BUILD_PATHS) $(RESULTS)
+	@cat $(PATHR)*.txt
 	@echo "-----------------------\nIGNORES:\n-----------------------"
 	@echo `grep -s IGNORE $(PATHR)*.txt`
 	@echo "-----------------------\nFAILURES:\n-----------------------"
