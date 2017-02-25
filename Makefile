@@ -29,7 +29,7 @@ SRCT = $(wildcard $(PATHT)*.c)
 COMPILE=gcc -c
 LINK=gcc
 DEPEND=gcc -MM -MG -MF
-CFLAGS=-Wall -std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST
+CFLAGS=-Wall -Werror -std=c99 -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
 
 
 # ============================== TARGETS ==================================
@@ -67,25 +67,13 @@ $(PATHR):
 $(PATHO)%.o:: $(PATHT)%.c
 	$(COMPILE) $(CFLAGS) $< -o $@
 
-$(PATHO)%.o:: $(PATHS)%.c
+$(PATHO)%.o:: $(PATHS)%.c $(PATHS)%.h
 	$(COMPILE) $(CFLAGS) $< -o $@
 
 $(PATHO)%.o:: $(PATHU)%.c $(PATHU)%.h
 	$(COMPILE) $(CFLAGS) $< -o $@ 
 
-# this makes gcc durinig linking seem to think of the .d file as a source file :(
-#
-## create dependencies
-#
-#$(PATHD)%.d:: $(PATHT)%.c
-#	$(DEPEND) $@ $<
-#
-## link
-#
-#$(PATHB)Test%.$(TARGET_EXTENSION): $(PATHO)Test%.o $(PATHO)%.o $(PATHU)unity.o $(PATHD)Test%.d
-#	$(LINK) -o $@ $^
-
-# so make a sure this has all the necessary deps
+# link
 
 $(PATHB)Test%.$(TARGET_EXTENSION): $(PATHO)Test%.o $(PATHO)%.o $(PATHU)unity.o
 	$(LINK) -o $@ $^
@@ -111,8 +99,12 @@ clean:
 	$(CLEANUP) $(PATHO)*.o
 	$(CLEANUP) $(PATHB)*.$(TARGET_EXTENSION)
 	$(CLEANUP) $(PATHR)*.txt
+	$(CLEANUP) demo
 
 # -------------------- added to build the demo ---------------------
+
+$(PATHO)demo.o: $(PATHS)demo.c $(PATHS)Hsmfui.h
+	$(COMPILE) $(CFLAGS) $< -o $@
 
 demo: $(PATHO)demo.o $(PATHO)Hsmfui.o
 	$(LINK) -o $@ $^
