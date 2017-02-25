@@ -38,6 +38,8 @@ CFLAGS=-Wall -std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST
 .PHONY: clean
 .PHONY: test
 
+all: test
+
 # keep some files around after build
 
 .PRECIOUS: $(PATHB)Test%.$(TARGET_EXTENSION)
@@ -45,7 +47,6 @@ CFLAGS=-Wall -std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST
 .PRECIOUS: $(PATHO)%.o
 .PRECIOUS: $(PATHR)%.txt
 
-all: test
 
 # create build folders
 
@@ -110,3 +111,8 @@ clean:
 	$(CLEANUP) $(PATHO)*.o
 	$(CLEANUP) $(PATHB)*.$(TARGET_EXTENSION)
 	$(CLEANUP) $(PATHR)*.txt
+
+# -------------------- added to build the demo ---------------------
+
+demo: $(PATHO)demo.o $(PATHO)Hsmfui.o
+	$(LINK) -o $@ $^
