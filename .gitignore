@@ -1,5 +1,7 @@
 todo
 
+build/
+
 # Object files
 *.o
 *.ko
