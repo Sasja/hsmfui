@@ -2,20 +2,20 @@
 #include "Hsmfui.h"
 
 #define ALL_SM \
-X(sm                    ) \
-X(    one               ) \
-X(    two               ) \
-X(        two_a         ) \
-X(            two_a_1   ) \
-X(            two_a_2   ) \
-X(            two_a_3   ) \
-X(        two_b         ) \
-X(    three             ) \
-X(       three_a        ) \
-X(            three_a_1 ) \
-X(            three_a_2 ) \
-X(       three_b        ) \
-X(       three_c        )
+X( sm                    ) \
+X(     one               ) \
+X(     two               ) \
+X(         two_a         ) \
+X(             two_a_1   ) \
+X(             two_a_2   ) \
+X(             two_a_3   ) \
+X(         two_b         ) \
+X(     three             ) \
+X(        three_a        ) \
+X(             three_a_1 ) \
+X(             three_a_2 ) \
+X(        three_b        ) \
+X(        three_c        )
 
 #define NUMBER_OF_STATES 14
 
