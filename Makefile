@@ -1,6 +1,5 @@
 # adapted from http://www.throwtheswitch.org/build/make
 
-CLEANUP=rm -rf
 MKDIR=mkdir -p
 TARGET_EXTENSION=out
 
@@ -15,8 +14,8 @@ BUILD_PATHS = $(PATHB) $(PATHD) $(PATHO) $(PATHR)
 
 SRCT = $(wildcard $(PATHT)*.c)
 
-COMPILE=gcc -c
-LINK=gcc
+COMPILE=gcc -c -coverage
+LINK=gcc -coverage
 DEPEND=gcc -MM -MG -MF
 CFLAGS=-Wall -Wno-unused-function -Werror -std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
 
@@ -76,13 +75,12 @@ $(PATHR)%.txt: $(PATHB)%.$(TARGET_EXTENSION)
 RESULTS = $(patsubst $(PATHT)Test%.c,$(PATHR)Test%.txt,$(SRCT))
 test: $(BUILD_PATHS) $(RESULTS)
 	@cat $(PATHR)*.txt
-#	@echo "-----------------------\nIGNORES:\n-----------------------"
-#	@echo `grep -s IGNORE $(PATHR)*.txt`
-#	@echo "-----------------------\nFAILURES:\n-----------------------"
-#	@echo `grep -s FAIL $(PATHR)*.txt`
-#	@echo "\nDONE"
+	@echo
+	gcov $(PATHO)Hsmfui.gcno
+	@echo
 
 # clean up
 
 clean:
-	$(CLEANUP) $(PATHB)
+	rm -rf $(PATHB)
+	rm *.gcov
