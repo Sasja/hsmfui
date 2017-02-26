@@ -77,7 +77,7 @@ test: $(BUILD_PATHS) $(RESULTS)
 	@cat $(PATHR)*.txt
 	@echo
 	cp $(PATHO)*.gc* $(PATHS)
-	gcov $(PATHS)Hsmfui.gcno
+	gcov -o $(PATHS) $(PATHS)Hsmfui.gcno
 	@echo
 
 # clean up
