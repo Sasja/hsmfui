@@ -400,6 +400,7 @@ int main( void )
     RUN_TEST(test_Exi_should_propagate_B);
     RUN_TEST(test_Exi_should_propagate_C);
 
+    RUN_TEST(test_Init_should_normally_not_trigger_error);
     RUN_TEST(test_Init_should_report_duplicate_states);
 
     return UNITY_END();
