@@ -1,16 +1,16 @@
 #include "Hsmfui.h"
 #include <stdio.h>
 
-static int doForActive( Hsmfui * hsm, int ( * f ) ( Hsmfui * ) );
-static int doForAll   ( Hsmfui * hsm, int ( * f ) ( Hsmfui * ) );
+static void doForActive( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) );
+static void doForAll   ( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) );
 
-static int setChildrensParent( Hsmfui * hsm );
-static int activateFirstChild( Hsmfui * hsm );
+static void setChildrensParent( Hsmfui * hsm );
+static void activateFirstChild( Hsmfui * hsm );
 
-static int callInit( Hsmfui * hsm );
-static int callEnt( Hsmfui * hsm );
-static int callAct( Hsmfui * hsm );
-static int callExi( Hsmfui * hsm );
+static void callInit( Hsmfui * hsm );
+static void callEnt( Hsmfui * hsm );
+static void callAct( Hsmfui * hsm );
+static void callExi( Hsmfui * hsm );
 
 static int countSubstate( Hsmfui * hsm, Hsmfui * state );
 static int hasDuplicate(  Hsmfui * top, Hsmfui * subSm );
@@ -62,49 +62,45 @@ const char const * hsmfui_getErrorString( enum hsmfui_error error)
 
 /***********************************************************/
 
-static int doForActive( Hsmfui * hsm, int ( * f ) ( Hsmfui * ) )
+static void doForActive( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) )
 {
     int i;
     Hsmfui * child;
-	int sum = 0;
 
-    sum += f( hsm );
+    f( hsm );
 
     if( hsm->isOrth )
     {
         for(i = 0; i < hsm->nChildren; i++)
         {
             child = hsm->children[i];
-            sum += doForActive( child, f );
+            doForActive( child, f );
         }
     }
     else 
     {
         child = hsm->state;
-        if( child != NULL ) sum += doForActive( child, f );
+        if( child != NULL ) doForActive( child, f );
     }
-	return sum;
 }
 
-static int doForAll( Hsmfui * hsm, int ( * f ) ( Hsmfui * ) )
+static void doForAll( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) )
 {
     int i;
     Hsmfui * child;
-	int sum = 0;
 
-    sum += f( hsm );
+    f( hsm );
 
     for(i = 0; i < hsm->nChildren; i++)
     {
         child = hsm->children[i];
-        sum += doForAll( child, f );
+        doForAll( child, f );
     }
-	return sum;
 }
 
 /***********************************************************/
 
-static int setChildrensParent( Hsmfui * hsm )
+static void setChildrensParent( Hsmfui * hsm )
 {
     int i;
     Hsmfui * child;
@@ -113,49 +109,43 @@ static int setChildrensParent( Hsmfui * hsm )
         child = hsm->children[i];
         child->parent = hsm;
     }
-	return 1;
 }
 
-static int activateFirstChild( Hsmfui * hsm )
+static void activateFirstChild( Hsmfui * hsm )
 {
     if( !hsm->isOrth && hsm->nChildren > 0 ) hsm->state = hsm->children[0];
-	return 1;
 }
 
-static int callInit( Hsmfui * hsm )
+static void callInit( Hsmfui * hsm )
 {
     void (*handler)(void);
 
     handler = hsm->Init;
     if( handler != NULL) handler();
-	return 1;
 }
 
-static int callEnt( Hsmfui * hsm )
+static void callEnt( Hsmfui * hsm )
 {
     void (*handler)(void);
 
     handler = hsm->Ent;
     if( handler != NULL) handler();
-	return 1;
 }
 
-static int callAct( Hsmfui * hsm )
+static void callAct( Hsmfui * hsm )
 {
     void (*handler)(void);
 
     handler = hsm->Act;
     if( handler != NULL) handler();
-	return 1;
 }
 
-static int callExi( Hsmfui * hsm )
+static void callExi( Hsmfui * hsm )
 {
     void (*handler)(void);
 
     handler = hsm->Exi;
     if( handler != NULL) handler();
-	return 1;
 }
 
 static int countSubstate( Hsmfui * hsm, Hsmfui * state)
