@@ -110,7 +110,7 @@ static void clearLogs( void )
     log_Exi[NUMBER_OF_STATES]  = '\0';
 }
 
-void test_hsmfui_Init_should_propagate(void)
+void test_Init_should_propagate(void)
 {
     HSM_DEFINITION
 
@@ -128,7 +128,7 @@ void test_hsmfui_Init_should_propagate(void)
 }
 
 
-void test_hsmfui_Init_should_set_all_parentpointers(void)
+void test_Init_should_set_all_parentpointers(void)
 {
 	HSM_DEFINITION
     
@@ -158,7 +158,7 @@ void test_hsmfui_Init_should_set_all_parentpointers(void)
 
 }
 
-void test_hsmfui_Init_should_set_all_states(void)
+void test_Init_should_set_all_states(void)
 {
 	HSM_DEFINITION
     
@@ -186,19 +186,19 @@ void test_hsmfui_Init_should_set_all_states(void)
 
 }
 
-void test_hsmfui_Act_should_propagate(void)
+void test_Act_should_propagate(void)
 {
     HSM_DEFINITION
 
-	/* plug counter into all init handler pointers */
+    clearLogs();
+
 	#define X(s) s.Act = s##_Act_log;
 	ALL_SM
 	#undef X
 
 	hsmfui_Init( &sm );
 
-    clearLogs();
-    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Init);
+    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Act);
 
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("11000000000000", log_Act);
@@ -216,12 +216,65 @@ void test_hsmfui_Act_should_propagate(void)
     TEST_ASSERT_EQUAL_STRING("41111000221122", log_Act);
 }
 
+void test_Ent_should_propagate_A(void)
+{
+    HSM_DEFINITION
+
+    clearLogs();
+	#define X(s) s.Ent = s##_Ent_log;
+	ALL_SM
+	#undef X
+
+	hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Ent);
+
+    hsmfui_Ent( &sm );
+    TEST_ASSERT_EQUAL_STRING("11000000000000", log_Ent);
+}
+
+void test_Ent_should_propagate_B(void)
+{
+    HSM_DEFINITION
+
+    clearLogs();
+	#define X(s) s.Ent = s##_Ent_log;
+	ALL_SM
+	#undef X
+
+	hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Ent);
+
+    sm.state = &two;
+    hsmfui_Ent( &sm );
+    TEST_ASSERT_EQUAL_STRING("10111000000000", log_Ent);
+}
+
+void test_Ent_should_propagate_C(void)
+{
+    HSM_DEFINITION
+
+    clearLogs();
+	#define X(s) s.Ent = s##_Ent_log;
+	ALL_SM
+	#undef X
+
+	hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Ent);
+
+    sm.state = &three;  /* orthogonal node! */
+    hsmfui_Ent( &sm );
+    TEST_ASSERT_EQUAL_STRING("10000000111011", log_Ent);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
-	RUN_TEST(test_hsmfui_Init_should_propagate);
-	RUN_TEST(test_hsmfui_Init_should_set_all_parentpointers);
-	RUN_TEST(test_hsmfui_Init_should_set_all_states);
-    RUN_TEST(test_hsmfui_Act_should_propagate);
+	RUN_TEST(test_Init_should_propagate);
+	RUN_TEST(test_Init_should_set_all_parentpointers);
+	RUN_TEST(test_Init_should_set_all_states);
+    RUN_TEST(test_Ent_should_propagate_A);
+    RUN_TEST(test_Ent_should_propagate_B);
+    RUN_TEST(test_Ent_should_propagate_C);
+    RUN_TEST(test_Act_should_propagate);
     return UNITY_END();
 }
