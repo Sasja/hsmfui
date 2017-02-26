@@ -58,6 +58,7 @@ typedef struct Hsmfui
 
 extern void hsmfui_Init( Hsmfui * hsm );
 extern void hsmfui_Act( Hsmfui * hsm );
+extern void hsmfui_Ent( Hsmfui * hsm );
 extern void hsmfui_Exi( Hsmfui * hsm );
 
 int8_t AverageThreeBytes(int8_t a, int8_t b, int8_t c);

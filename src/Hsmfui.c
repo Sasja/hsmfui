@@ -18,6 +18,27 @@ void hsmfui_Init( Hsmfui * hsm )
 	}
 }
 
+void hsmfui_Ent( Hsmfui * hsm )
+{
+    int i;
+	Hsmfui * child;
+
+	if( hsm->Ent != NULL) hsm->Ent();
+
+    if( hsm->isOrth )
+    {
+        for(i=0; i<hsm->nChildren; i++)
+        {
+            child = hsm->children[i];
+            hsmfui_Ent( child );
+        }
+    }
+    else 
+    {
+        if( hsm->state != NULL ) hsmfui_Ent( hsm->state );
+    }
+}
+
 void hsmfui_Act( Hsmfui * hsm )
 {
     int i;
