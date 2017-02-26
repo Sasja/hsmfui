@@ -39,8 +39,9 @@
 /***********************************************************/
 
 #define HSMFUI_ERRORS \
-X( NULL          ) \
-X( UNSPECIFIED   )
+X( NONE            ) \
+X( DUPLICATE_STATE ) \
+X( UNSPECIFIED     )
 
 enum hsmfui_error
 {
