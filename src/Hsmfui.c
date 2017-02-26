@@ -171,17 +171,17 @@ static int countSubstate( Hsmfui * hsm, Hsmfui * state)
 {
     int i;
     Hsmfui * child;
-	int sum = 0;
+    int sum = 0;
 
-	if ( hsm == state ) sum++;
+    if ( hsm == state ) sum++;
 
     for(i = 0; i < hsm->nChildren; i++)
     {
         child = hsm->children[i];
         sum += countSubstate( child, state );
-		if( sum > 1 ) break;	/* prevent infinite loop */
+        if( sum > 1 ) break;    /* prevent infinite loop */
     }
-	return sum;
+    return sum;
 }
 
 static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
@@ -190,7 +190,7 @@ static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
     Hsmfui * child;
     int result = 0;
 
-	if ( countSubstate( top, subSm ) > 1 )
+    if ( countSubstate( top, subSm ) > 1 )
     {
         result = 1;
     }
@@ -202,7 +202,7 @@ static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
             if( hasDuplicate( top, child ) )
             {
                 result = 1;
-                break;	/* prevent infinite loop */
+                break;    /* prevent infinite loop */
             }
         }
     }
@@ -211,7 +211,7 @@ static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
     /* printf("%s(%s,%s) = %d\n", __FUNCTION__, top->name, subSm->name, result); */
     #endif
     
-	return result;
+    return result;
 }
 
 static void raiseError( Hsmfui * hsm, enum hsmfui_error error )
