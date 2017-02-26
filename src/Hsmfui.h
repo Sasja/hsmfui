@@ -6,7 +6,7 @@
 #define AR_LEN(ar) sizeof(ar)/sizeof(ar[0])
 
 #define _NODE(name, nchildren, pchildren, orth) \
-    static Hsmfui name = { \
+    Hsmfui name = { \
         #name, \
         NULL, \
         nchildren, \
@@ -19,7 +19,7 @@
 #define LEAF(name) _NODE(name, 0, NULL, 0)
 
 #define NODE_START(name) \
-    static Hsmfui * _CHILDREN_##name[] = {
+    Hsmfui * _CHILDREN_##name[] = {
 
 #define ORTH_START(name) NODE_START(name)
 
