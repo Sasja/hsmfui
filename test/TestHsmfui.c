@@ -73,7 +73,8 @@ static char log_Init[NUMBER_OF_STATES + 1];
 static char log_Ent[NUMBER_OF_STATES + 1];
 static char log_Act[NUMBER_OF_STATES + 1];
 static char log_Exi[NUMBER_OF_STATES + 1];
-static enum hsmfui_error log_Error;
+static enum hsmfui_error log_Error_value;
+static int log_Error_count;
 
 #define X(s) \
     static void s##_Init_log( void ) \
@@ -109,11 +110,15 @@ static void clearLogs( void )
     log_Ent[NUMBER_OF_STATES]  = '\0';
     log_Act[NUMBER_OF_STATES]  = '\0';
     log_Exi[NUMBER_OF_STATES]  = '\0';
+
+    log_Error_count = 0;
+    log_Error_value = HSMFUI_ERROR_NONE;
 }
 
 static void error_log( enum hsmfui_error error )
 {
-    log_Error = error;
+    log_Error_count++;
+    log_Error_value = error;
 }
 
 static void error_ignore( enum hsmfui_error error )
@@ -331,6 +336,18 @@ void test_Exi_should_propagate_C( void )
     TEST_ASSERT_EQUAL_STRING("10000000111011", log_Exi);
 }
 
+void test_Init_should_normally_not_trigger_error( void )
+{
+    HSM_DEFINITION
+
+    sm.Error = error_log;
+
+    clearLogs();
+
+    hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL(0, log_Error_count);
+}
+
 void test_Init_should_report_duplicate_states( void )
 {
     /*
@@ -356,13 +373,13 @@ void test_Init_should_report_duplicate_states( void )
         CHILD(two)
     NODE_STOP(sm)
 
+    clearLogs();
+
     sm.Error = error_log;
 
-    TEST_ASSERT_EQUAL(HSMFUI_ERROR_NONE,            log_Error);
-
     hsmfui_Init( &sm );
-
-    TEST_ASSERT_EQUAL(HSMFUI_ERROR_DUPLICATE_STATE, log_Error);
+    TEST_ASSERT_EQUAL(HSMFUI_ERROR_DUPLICATE_STATE, log_Error_value);
+    TEST_ASSERT_EQUAL(0, log_Error_count);
 }
 
 int main( void )
