@@ -76,11 +76,13 @@ RESULTS = $(patsubst $(PATHT)Test%.c,$(PATHR)Test%.txt,$(SRCT))
 test: $(BUILD_PATHS) $(RESULTS)
 	@cat $(PATHR)*.txt
 	@echo
-	gcov $(PATHO)Hsmfui.gcno
+	cp $(PATHO)*.gc* $(PATHS)
+	gcov $(PATHS)Hsmfui.gcno
 	@echo
 
 # clean up
 
 clean:
 	rm -rf $(PATHB)
-	rm *.gcov
+	rm -f $(PATHS)*.gc*
+	rm -f *.gcov*

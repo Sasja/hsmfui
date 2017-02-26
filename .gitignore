@@ -2,8 +2,7 @@ todo
 demo
 *.swp
 
-*.gcov
-*.gcno
+*.gc*
 
 build/
 
