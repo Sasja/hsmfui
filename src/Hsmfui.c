@@ -1,82 +1,125 @@
 #include "Hsmfui.h"
 #include <stdio.h>
 
+static void doForActive( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) );
+static void doForAll   ( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) );
+
+static void setChildrensParent( Hsmfui * hsm );
+static void activateFirstChild( Hsmfui * hsm );
+
+static void callInit( Hsmfui * hsm );
+static void callEnt( Hsmfui * hsm );
+static void callAct( Hsmfui * hsm );
+static void callExi( Hsmfui * hsm );
+
+/***********************************************************/
+
 void hsmfui_Init( Hsmfui * hsm )
 {
-	int i;
-	Hsmfui * child;
-
-	if( hsm->Init != NULL) hsm->Init();
-
-    if( !hsm->isOrth && hsm->nChildren > 0) hsm->state = hsm->children[0];
-
-	for(i=0; i<hsm->nChildren; i++)
-	{
-		child = hsm->children[i];
-		child->parent = hsm;
-		hsmfui_Init( child );
-	}
+    doForAll( hsm, setChildrensParent );
+    doForAll( hsm, activateFirstChild );
+    doForAll( hsm, callInit );
 }
 
 void hsmfui_Ent( Hsmfui * hsm )
 {
-    int i;
-	Hsmfui * child;
-
-	if( hsm->Ent != NULL) hsm->Ent();
-
-    if( hsm->isOrth )
-    {
-        for(i=0; i<hsm->nChildren; i++)
-        {
-            child = hsm->children[i];
-            hsmfui_Ent( child );
-        }
-    }
-    else 
-    {
-        if( hsm->state != NULL ) hsmfui_Ent( hsm->state );
-    }
+    doForActive( hsm, callEnt );
 }
 
 void hsmfui_Act( Hsmfui * hsm )
 {
-    int i;
-	Hsmfui * child;
-
-	if( hsm->Act != NULL) hsm->Act();
-
-    if( hsm->isOrth )
-    {
-        for(i=0; i<hsm->nChildren; i++)
-        {
-            child = hsm->children[i];
-            hsmfui_Act( child );
-        }
-    }
-    else 
-    {
-        if( hsm->state != NULL ) hsmfui_Act( hsm->state );
-    }
+    doForActive( hsm, callAct );
 }
 
 void hsmfui_Exi( Hsmfui * hsm )
 {
-    int i;
-	Hsmfui * child;
+    doForActive( hsm, callExi );
+}
 
-	if( hsm->Exi != NULL) hsm->Exi();
+/***********************************************************/
+
+static void doForActive( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) )
+{
+    int i;
+    Hsmfui * child;
+
+    f( hsm );
 
     if( hsm->isOrth )
     {
-        for(i=0; i<hsm->nChildren; i++)
+        for(i = 0; i < hsm->nChildren; i++)
         {
             child = hsm->children[i];
-            hsmfui_Exi( child );
+            doForActive( child, f );
         }
     }
     else 
     {
-        if( hsm->state != NULL ) hsmfui_Exi( hsm->state );
+        child = hsm->state;
+        if( child != NULL ) doForActive( child, f );
     }
+}
+
+static void doForAll( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) )
+{
+    int i;
+    Hsmfui * child;
+
+    f( hsm );
+
+    for(i = 0; i < hsm->nChildren; i++)
+    {
+        child = hsm->children[i];
+        doForAll( child, f );
+    }
+}
+
+/***********************************************************/
+
+static void setChildrensParent( Hsmfui * hsm )
+{
+    int i;
+    Hsmfui * child;
+    for( i = 0; i < hsm->nChildren; i++ )
+    {
+        child = hsm->children[i];
+        child->parent = hsm;
+    }
+}
+
+static void activateFirstChild( Hsmfui * hsm )
+{
+    if( !hsm->isOrth && hsm->nChildren > 0 ) hsm->state = hsm->children[0];
+}
+
+static void callInit( Hsmfui * hsm )
+{
+    void (*handler)(void);
+
+    handler = hsm->Init;
+    if( handler != NULL) handler();
+}
+
+static void callEnt( Hsmfui * hsm )
+{
+    void (*handler)(void);
+
+    handler = hsm->Ent;
+    if( handler != NULL) handler();
+}
+
+static void callAct( Hsmfui * hsm )
+{
+    void (*handler)(void);
+
+    handler = hsm->Act;
+    if( handler != NULL) handler();
+}
+
+static void callExi( Hsmfui * hsm )
+{
+    void (*handler)(void);
+
+    handler = hsm->Exi;
+    if( handler != NULL) handler();
 }
