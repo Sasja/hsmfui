@@ -27,7 +27,7 @@ CFLAGS=-Wall -Wno-unused-function -Werror -std=c89 -I. -I$(PATHU) -I$(PATHS) -DT
 .PHONY: clean
 .PHONY: test
 
-all: test
+all: $(BUILD_PATHS) $(PATHO)Hsmfui.o
 
 # keep some files around after build
 
