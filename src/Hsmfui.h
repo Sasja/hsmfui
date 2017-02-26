@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+/***********************************************************/
+
 #define AR_LEN(ar) sizeof(ar)/sizeof(ar[0])
 
 #define _NODE(name, nchildren, pchildren, orth) \
@@ -12,6 +14,7 @@
         nchildren, \
         pchildren, \
         NULL, NULL, NULL, NULL, NULL, NULL, \
+        NULL, \
         orth, \
         NULL \
     };
@@ -33,6 +36,19 @@
     }; \
     _NODE(name, AR_LEN(_CHILDREN_##name), _CHILDREN_##name, 1)
 
+/***********************************************************/
+
+#define HSMFUI_ERRORS \
+X( NULL          ) \
+X( UNSPECIFIED   )
+
+enum hsmfui_error
+{
+#define X(error) HSMFUI_ERROR_##error,
+HSMFUI_ERRORS
+#undef X
+};
+
 typedef struct Hsmfui Hsmfui;
 typedef struct Hsmfui
 {
@@ -50,6 +66,8 @@ typedef struct Hsmfui
     void (*Guard)   (void);
     void (*Proceed) (void);
 
+    void (*Error) (enum hsmfui_error);
+
     const int isOrth;
 
     Hsmfui * state;
@@ -61,6 +79,6 @@ extern void hsmfui_Act( Hsmfui * hsm );
 extern void hsmfui_Ent( Hsmfui * hsm );
 extern void hsmfui_Exi( Hsmfui * hsm );
 
-int8_t AverageThreeBytes(int8_t a, int8_t b, int8_t c);
+extern const char const * hsmfui_getErrorString( enum hsmfui_error error);
 
 #endif /* _HSMFUI_H */

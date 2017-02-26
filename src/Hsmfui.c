@@ -14,6 +14,15 @@ static void callExi( Hsmfui * hsm );
 
 /***********************************************************/
 
+const char const * errorStrings[] =
+{
+#define X(error) #error,
+HSMFUI_ERRORS
+#undef X
+};
+
+/***********************************************************/
+
 void hsmfui_Init( Hsmfui * hsm )
 {
     doForAll( hsm, setChildrensParent );
@@ -34,6 +43,11 @@ void hsmfui_Act( Hsmfui * hsm )
 void hsmfui_Exi( Hsmfui * hsm )
 {
     doForActive( hsm, callExi );
+}
+
+const char const * hsmfui_getErrorString( enum hsmfui_error error)
+{
+    return errorStrings[error];
 }
 
 /***********************************************************/
