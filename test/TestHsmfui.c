@@ -266,6 +266,56 @@ void test_Ent_should_propagate_C(void)
     TEST_ASSERT_EQUAL_STRING("10000000111011", log_Ent);
 }
 
+void test_Exi_should_propagate_A(void)
+{
+    HSM_DEFINITION
+
+    clearLogs();
+	#define X(s) s.Exi = s##_Exi_log;
+	ALL_SM
+	#undef X
+
+	hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
+
+    hsmfui_Exi( &sm );
+    TEST_ASSERT_EQUAL_STRING("11000000000000", log_Exi);
+}
+
+void test_Exi_should_propagate_B(void)
+{
+    HSM_DEFINITION
+
+    clearLogs();
+	#define X(s) s.Exi = s##_Exi_log;
+	ALL_SM
+	#undef X
+
+	hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
+
+    sm.state = &two;
+    hsmfui_Exi( &sm );
+    TEST_ASSERT_EQUAL_STRING("10111000000000", log_Exi);
+}
+
+void test_Exi_should_propagate_C(void)
+{
+    HSM_DEFINITION
+
+    clearLogs();
+	#define X(s) s.Exi = s##_Exi_log;
+	ALL_SM
+	#undef X
+
+	hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
+
+    sm.state = &three;  /* orthogonal node! */
+    hsmfui_Exi( &sm );
+    TEST_ASSERT_EQUAL_STRING("10000000111011", log_Exi);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -276,5 +326,8 @@ int main(void)
     RUN_TEST(test_Ent_should_propagate_B);
     RUN_TEST(test_Ent_should_propagate_C);
     RUN_TEST(test_Act_should_propagate);
+    RUN_TEST(test_Exi_should_propagate_A);
+    RUN_TEST(test_Exi_should_propagate_B);
+    RUN_TEST(test_Exi_should_propagate_C);
     return UNITY_END();
 }
