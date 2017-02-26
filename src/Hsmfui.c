@@ -62,5 +62,21 @@ void hsmfui_Act( Hsmfui * hsm )
 
 void hsmfui_Exi( Hsmfui * hsm )
 {
-}
+    int i;
+	Hsmfui * child;
 
+	if( hsm->Exi != NULL) hsm->Exi();
+
+    if( hsm->isOrth )
+    {
+        for(i=0; i<hsm->nChildren; i++)
+        {
+            child = hsm->children[i];
+            hsmfui_Exi( child );
+        }
+    }
+    else 
+    {
+        if( hsm->state != NULL ) hsmfui_Exi( hsm->state );
+    }
+}
