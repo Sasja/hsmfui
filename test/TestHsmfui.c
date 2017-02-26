@@ -382,6 +382,13 @@ void test_Init_should_report_duplicate_states( void )
     TEST_ASSERT_EQUAL(0, log_Error_count);
 }
 
+void test_getErrorString( void )
+{
+    #define X(error) TEST_ASSERT_EQUAL_STRING(#error, hsmfui_getErrorString(error));
+    HSMFUI_ERRORS
+    #undef X
+}
+
 int main( void )
 {
     UNITY_BEGIN();
@@ -402,6 +409,8 @@ int main( void )
 
     RUN_TEST(test_Init_should_normally_not_trigger_error);
     RUN_TEST(test_Init_should_report_duplicate_states);
+
+    RUN_TEST(test_getErrorString);
 
     return UNITY_END();
 }

@@ -39,13 +39,13 @@
 /***********************************************************/
 
 #define HSMFUI_ERRORS \
-X( NONE            ) \
-X( DUPLICATE_STATE ) \
-X( UNSPECIFIED     )
+X( HSMFUI_ERROR_NONE            ) \
+X( HSMFUI_ERROR_DUPLICATE_STATE ) \
+X( HSMFUI_ERROR_UNSPECIFIED     )
 
 enum hsmfui_error
 {
-#define X(error) HSMFUI_ERROR_##error,
+#define X(error) error,
 HSMFUI_ERRORS
 #undef X
 };
