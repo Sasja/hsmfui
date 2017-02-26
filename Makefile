@@ -18,7 +18,7 @@ SRCT = $(wildcard $(PATHT)*.c)
 COMPILE=gcc -c
 LINK=gcc
 DEPEND=gcc -MM -MG -MF
-CFLAGS=-Wall -Wno-unused-function -Werror -std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST
+CFLAGS=-Wall -Wno-unused-function -Werror -std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
 
 
 # ============================== TARGETS ==================================

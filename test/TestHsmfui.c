@@ -376,7 +376,7 @@ void test_Init_should_report_duplicate_states_A( void )
 
     hsmfui_Init( &sm );
     TEST_ASSERT_EQUAL(HSMFUI_ERROR_DUPLICATE_STATE, log_Error_value);
-    TEST_ASSERT_EQUAL(0, log_Error_count);
+    TEST_ASSERT_EQUAL(1, log_Error_count);
 }
 
 void test_Init_should_report_duplicate_states_B( void )
@@ -414,7 +414,7 @@ void test_Init_should_report_duplicate_states_B( void )
 
     hsmfui_Init( &sm );
     TEST_ASSERT_EQUAL(HSMFUI_ERROR_DUPLICATE_STATE, log_Error_value);
-    TEST_ASSERT_EQUAL(0, log_Error_count);
+    TEST_ASSERT_EQUAL(1, log_Error_count);
 }
 
 void test_getErrorString( void )
