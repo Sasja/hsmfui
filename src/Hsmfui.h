@@ -16,7 +16,8 @@
         NULL, NULL, NULL, NULL, NULL, NULL, \
         NULL, \
         orth, \
-        NULL \
+        NULL, \
+        STATUS_NULL, \
     };
 
 #define LEAF(name) _NODE(name, 0, NULL, 0)
@@ -39,9 +40,14 @@
 /***********************************************************/
 
 #define HSMFUI_ERRORS \
-X( HSMFUI_ERROR_NONE            ) \
-X( HSMFUI_ERROR_DUPLICATE_STATE ) \
-X( HSMFUI_ERROR_UNSPECIFIED     )
+X( HSMFUI_ERROR_NONE                  ) \
+X( HSMFUI_ERROR_DUPLICATE_STATE       ) \
+X( HSMFUI_ERROR_DOUBLE_INITIALISATION ) \
+X( HSMFUI_ERROR_DOUBLE_ENTRY          ) \
+X( HSMFUI_ERROR_DOUBLE_EXIT           ) \
+X( HSMFUI_ERROR_INVALID_STATE         ) \
+X( HSMFUI_ERROR_SET_ACTIVE_STATE      ) \
+X( HSMFUI_ERROR_UNSPECIFIED           )
 
 enum hsmfui_error
 {
@@ -50,6 +56,12 @@ HSMFUI_ERRORS
 #undef X
 };
 
+enum stateStatus
+{
+    STATUS_NULL,
+    STATUS_INITIALISED,
+    STATUS_ENTERED
+};
 typedef struct Hsmfui Hsmfui;
 typedef struct Hsmfui
 {
@@ -72,6 +84,8 @@ typedef struct Hsmfui
     const int isOrth;
 
     Hsmfui * state;
+
+    enum stateStatus status;
     
 } Hsmfui;
 
@@ -81,5 +95,9 @@ extern void hsmfui_Ent( Hsmfui * hsm );
 extern void hsmfui_Exi( Hsmfui * hsm );
 
 extern const char const * hsmfui_getErrorString( enum hsmfui_error error);
+
+extern void hsmfui_SetState( Hsmfui * hsm, Hsmfui * state );
+extern void hsmfui_Transition( Hsmfui * hsm, Hsmfui * state );
+
 
 #endif /* _HSMFUI_H */

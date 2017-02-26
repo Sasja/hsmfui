@@ -7,13 +7,15 @@ static void doForAll   ( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) );
 static void setChildrensParent( Hsmfui * hsm );
 static void activateFirstChild( Hsmfui * hsm );
 
-static void callInit( Hsmfui * hsm );
-static void callEnt( Hsmfui * hsm );
-static void callAct( Hsmfui * hsm );
-static void callExi( Hsmfui * hsm );
+static void doInit( Hsmfui * hsm );
+static void doEnt( Hsmfui * hsm );
+static void doAct( Hsmfui * hsm );
+static void doExi( Hsmfui * hsm );
 
 static int countSubstate( Hsmfui * hsm, Hsmfui * state );
 static int hasDuplicate(  Hsmfui * top, Hsmfui * subSm );
+
+static void raiseError( Hsmfui * hsm, enum hsmfui_error error );
 
 /***********************************************************/
 
@@ -30,34 +32,43 @@ void hsmfui_Init( Hsmfui * hsm )
 {
     if( hasDuplicate( hsm, hsm ) )
     {
+        /* do not use raise error as parents are not defined yet */
         hsm->Error( HSMFUI_ERROR_DUPLICATE_STATE );
     }
     else
     {
         doForAll( hsm, setChildrensParent );
         doForAll( hsm, activateFirstChild );
-        doForAll( hsm, callInit );
+        doForAll( hsm, doInit );
     }
 }
 
 void hsmfui_Ent( Hsmfui * hsm )
 {
-    doForActive( hsm, callEnt );
+    doForActive( hsm, doEnt );
 }
 
 void hsmfui_Act( Hsmfui * hsm )
 {
-    doForActive( hsm, callAct );
+    doForActive( hsm, doAct );
 }
 
 void hsmfui_Exi( Hsmfui * hsm )
 {
-    doForActive( hsm, callExi );
+    doForActive( hsm, doExi );
 }
 
 const char const * hsmfui_getErrorString( enum hsmfui_error error)
 {
     return errorStrings[error];
+}
+
+void hsmfui_SetState( Hsmfui * hsm, Hsmfui * state )
+{
+}
+
+void hsmfui_Transition( Hsmfui * hsm, Hsmfui * state )
+{
 }
 
 /***********************************************************/
@@ -116,15 +127,23 @@ static void activateFirstChild( Hsmfui * hsm )
     if( !hsm->isOrth && hsm->nChildren > 0 ) hsm->state = hsm->children[0];
 }
 
-static void callInit( Hsmfui * hsm )
+static void doInit( Hsmfui * hsm )
 {
     void (*handler)(void);
 
-    handler = hsm->Init;
-    if( handler != NULL) handler();
+    if( hsm->status == STATUS_NULL )
+    {
+        handler = hsm->Init;
+        if( handler != NULL) handler();
+        hsm->status = STATUS_INITIALISED;
+    }
+    else
+    {
+        raiseError( hsm, HSMFUI_ERROR_DOUBLE_INITIALISATION );
+    }
 }
 
-static void callEnt( Hsmfui * hsm )
+static void doEnt( Hsmfui * hsm )
 {
     void (*handler)(void);
 
@@ -132,7 +151,7 @@ static void callEnt( Hsmfui * hsm )
     if( handler != NULL) handler();
 }
 
-static void callAct( Hsmfui * hsm )
+static void doAct( Hsmfui * hsm )
 {
     void (*handler)(void);
 
@@ -140,7 +159,7 @@ static void callAct( Hsmfui * hsm )
     if( handler != NULL) handler();
 }
 
-static void callExi( Hsmfui * hsm )
+static void doExi( Hsmfui * hsm )
 {
     void (*handler)(void);
 
@@ -193,4 +212,17 @@ static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
     #endif
     
 	return result;
+}
+
+static void raiseError( Hsmfui * hsm, enum hsmfui_error error )
+{
+    if( hsm->Error != NULL )
+    {
+        hsm->Error(error);
+    }
+    else
+    {
+        /* segfault when no parent as there is no handler for errors anyway in that case*/
+        raiseError( hsm->parent, error );
+    }
 }
