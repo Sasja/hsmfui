@@ -348,7 +348,7 @@ void test_Init_should_normally_not_trigger_error( void )
     TEST_ASSERT_EQUAL(0, log_Error_count);
 }
 
-void test_Init_should_report_duplicate_states( void )
+void test_Init_should_report_duplicate_states_A( void )
 {
     /*
     sm
@@ -360,14 +360,49 @@ void test_Init_should_report_duplicate_states( void )
 
     LEAF(one)
     LEAF(a)
-
     NODE_START(two)
         CHILD(a)
         CHILD(one)
     NODE_STOP(two)
-
     /* LEAF(one) allready defined */
+    NODE_START(sm)
+        CHILD(one)
+        CHILD(two)
+    NODE_STOP(sm)
 
+    clearLogs();
+
+    sm.Error = error_log;
+
+    hsmfui_Init( &sm );
+    TEST_ASSERT_EQUAL(HSMFUI_ERROR_DUPLICATE_STATE, log_Error_value);
+    TEST_ASSERT_EQUAL(0, log_Error_count);
+}
+
+void test_Init_should_report_duplicate_states_B( void )
+{
+    /* in this case the duplicate is not a leaf */
+
+    /*
+    sm
+        one
+            a
+        two
+            b
+            one
+                a
+    */
+
+    LEAF(a)
+    NODE_START(one)
+        CHILD(a)
+    NODE_STOP(one)
+    LEAF(b)
+    NODE_START(two)
+        CHILD(b)
+        CHILD(one)
+    NODE_STOP(two)
+    /* LEAF(a) and NODE(one) allready defined */
     NODE_START(sm)
         CHILD(one)
         CHILD(two)
@@ -408,7 +443,8 @@ int main( void )
     RUN_TEST(test_Exi_should_propagate_C);
 
     RUN_TEST(test_Init_should_normally_not_trigger_error);
-    RUN_TEST(test_Init_should_report_duplicate_states);
+    RUN_TEST(test_Init_should_report_duplicate_states_A);
+    RUN_TEST(test_Init_should_report_duplicate_states_B);
 
     RUN_TEST(test_getErrorString);
 
