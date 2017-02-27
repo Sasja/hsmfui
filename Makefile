@@ -17,7 +17,7 @@ SRCT = $(wildcard $(PATHT)*.c)
 COMPILE=gcc -c -coverage
 LINK=gcc -coverage
 DEPEND=gcc -MM -MG -MF
-CFLAGS=-Wall -Wno-unused-function -Werror -std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
+CFLAGS=-Wall -Werror -std=c89 -pedantic -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
 
 
 # ============================== TARGETS ==================================
@@ -58,7 +58,7 @@ $(PATHO)unity.o : $(PATHU)unity.c $(PATHU)unity.h
 # compile tests
 
 $(PATHO)%.o: $(PATHT)%.c $(PATHS)Hsmfui.h
-	$(COMPILE) $(CFLAGS) $< -o $@
+	$(COMPILE) $(CFLAGS) -Wno-unused-function $< -o $@
 
 # link tests
 
