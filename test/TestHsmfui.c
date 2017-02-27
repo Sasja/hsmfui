@@ -419,13 +419,6 @@ void test_Init_should_error_duplicate_states_B( void )
     TEST_ASSERT_EQUAL(1, log_Error_count);
 }
 
-void test_getErrorString( void )
-{
-    #define X(error) TEST_ASSERT_EQUAL_STRING(#error, hsmfui_getErrorString(error));
-    HSMFUI_ERRORS
-    #undef X
-}
-
 void test_Init_twice_should_refuse_and_error( void )
 {
     HSM_DEFINITION
@@ -623,8 +616,6 @@ int main( void )
     RUN_TEST(test_Exi_should_propagate_A);
     RUN_TEST(test_Exi_should_propagate_B);
     RUN_TEST(test_Exi_should_propagate_C);
-
-    RUN_TEST(test_getErrorString);
 
     RUN_TEST(test_Init_twice_should_refuse_and_error);
     RUN_TEST(test_Ent_twice_should_refuse_and_error);
