@@ -60,30 +60,30 @@ enum stateStatus
     STATUS_INITIALISED,
     STATUS_ENTERED
 };
-struct Hsmfui;
-typedef struct Hsmfui
+typedef struct Hsmfui Hsmfui;
+struct Hsmfui
 {
-    const char * name;
+    const char *    name;
 
-    Hsmfui * parent;
-    
-    const int nChildren;
-    struct Hsmfui * const (* const children);
+    Hsmfui *        parent;
 
-    void (*Init)    (void);
-    void (*Ent)     (void);
-    void (*Act)     (void);
-    void (*Exi)     (void);
+    const int       nChildren;
+    Hsmfui * const (* const children);
+
+    void (*Init) (void);
+    void (*Ent)  (void);
+    void (*Act)  (void);
+    void (*Exi)  (void);
 
     void (*Error) (enum hsmfui_error);
 
-    const int isOrth;
+    const int        isOrth;
 
-    Hsmfui * state;
+    Hsmfui *         state;
 
     enum stateStatus status;
-    
-} Hsmfui;
+
+};
 
 extern void hsmfui_Init( Hsmfui * hsm );
 extern void hsmfui_Act( Hsmfui * hsm );
