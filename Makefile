@@ -17,7 +17,7 @@ SRCT = $(wildcard $(PATHT)*.c)
 COMPILE=gcc -c -coverage
 LINK=gcc -coverage
 DEPEND=gcc -MM -MG -MF
-CFLAGS=-Wall -Werror -std=c89 -pedantic -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
+CFLAGS=-std=c89 -I. -I$(PATHU) -I$(PATHS) -DTEST -DDEBUG
 
 
 # ============================== TARGETS ==================================
@@ -48,7 +48,7 @@ $(PATHR):
 # compile hsmfui
 
 $(PATHO)Hsmfui.o: $(PATHS)Hsmfui.c $(PATHS)Hsmfui.h 
-	$(COMPILE) $(CFLAGS) $< -o $@
+	$(COMPILE) -Wall -Werror -pedantic $(CFLAGS) $< -o $@
 
 # compile Unity
 
