@@ -60,7 +60,7 @@ enum stateStatus
     STATUS_INITIALISED,
     STATUS_ENTERED
 };
-typedef struct Hsmfui Hsmfui;
+struct Hsmfui;
 typedef struct Hsmfui
 {
     const char * name;
@@ -68,7 +68,7 @@ typedef struct Hsmfui
     Hsmfui * parent;
     
     const int nChildren;
-    Hsmfui * const (* const children);
+    struct Hsmfui * const (* const children);
 
     void (*Init)    (void);
     void (*Ent)     (void);
@@ -90,7 +90,7 @@ extern void hsmfui_Act( Hsmfui * hsm );
 extern void hsmfui_Ent( Hsmfui * hsm );
 extern void hsmfui_Exi( Hsmfui * hsm );
 
-extern const char const * hsmfui_getErrorString( enum hsmfui_error error);
+extern const char * const hsmfui_getErrorString( enum hsmfui_error error);
 
 extern void hsmfui_SetState( Hsmfui * hsm, Hsmfui * state );
 extern void hsmfui_Transition( Hsmfui * hsm, Hsmfui * state );

@@ -18,7 +18,7 @@ static int hasDuplicate(  Hsmfui * top, Hsmfui * subSm );
 
 /***********************************************************/
 
-const char const * errorStrings[] =
+const char * const errorStrings[] =
 {
 #define X(error) #error
 HSMFUI_ERRORS
@@ -57,7 +57,7 @@ void hsmfui_Exi( Hsmfui * hsm )
     doForActive( hsm, doExi );
 }
 
-const char const * hsmfui_getErrorString( enum hsmfui_error error)
+const char * const hsmfui_getErrorString( enum hsmfui_error error)
 {
     return errorStrings[error];
 }
