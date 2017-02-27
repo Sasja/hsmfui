@@ -30,14 +30,14 @@ LEAF(three_a_2)         \
 LEAF(three_a_1)         \
                         \
 NODE_START(three_a)     \
-    CHILD(three_a_1)    \
-    CHILD(three_a_2)    \
+    &three_a_1,         \
+    &three_a_2          \
 NODE_STOP(three_a)      \
                         \
 ORTH_START(three)       \
-    CHILD(three_a)      \
-    CHILD(three_b)      \
-    CHILD(three_c)      \
+    &three_a,           \
+    &three_b,           \
+    &three_c            \
 ORTH_STOP(three)        \
                         \
 LEAF(two_b)             \
@@ -47,22 +47,22 @@ LEAF(two_a_2)           \
 LEAF(two_a_1)           \
                         \
 NODE_START(two_a)       \
-    CHILD(two_a_1)      \
-    CHILD(two_a_2)      \
-    CHILD(two_a_3)      \
+    &two_a_1,           \
+    &two_a_2,           \
+    &two_a_3            \
 NODE_STOP(two_a)        \
                         \
 NODE_START(two)         \
-    CHILD(two_a)        \
-    CHILD(two_b)        \
+    &two_a,             \
+    &two_b              \
 NODE_STOP(two)          \
                         \
 LEAF(one)               \
                         \
 NODE_START(sm)          \
-    CHILD(one)          \
-    CHILD(two)          \
-    CHILD(three)        \
+    &one,               \
+    &two,               \
+    &three              \
 NODE_STOP(sm)           
 
 
@@ -364,13 +364,13 @@ void test_Init_should_error_duplicate_states_A( void )
     LEAF(one)
     LEAF(a)
     NODE_START(two)
-        CHILD(a)
-        CHILD(one)
+        &a,
+        &one
     NODE_STOP(two)
     /* LEAF(one) allready defined */
     NODE_START(sm)
-        CHILD(one)
-        CHILD(two)
+        &one,
+        &two
     NODE_STOP(sm)
 
     clearLogs();
@@ -398,17 +398,17 @@ void test_Init_should_error_duplicate_states_B( void )
 
     LEAF(a)
     NODE_START(one)
-        CHILD(a)
+        &a
     NODE_STOP(one)
     LEAF(b)
     NODE_START(two)
-        CHILD(b)
-        CHILD(one)
+        &b,
+        &one
     NODE_STOP(two)
     /* LEAF(a) and NODE(one) allready defined */
     NODE_START(sm)
-        CHILD(one)
-        CHILD(two)
+        &one,
+        &two
     NODE_STOP(sm)
 
     clearLogs();

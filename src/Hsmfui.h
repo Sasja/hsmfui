@@ -17,7 +17,7 @@
         NULL,                       /* Error                */ \
         orth,                       /* isOrth               */ \
         NULL,                       /* state                */ \
-        STATUS_NULL,                /* status               */ \
+        STATUS_NULL                 /* status               */ \
     };
 
 #define LEAF(name) _NODE(name, 0, NULL, 0)
@@ -26,8 +26,6 @@
     Hsmfui * _CHILDREN_##name[] = {
 
 #define ORTH_START(name) NODE_START(name)
-
-#define CHILD(child) &child ,
 
 #define NODE_STOP(name) \
     }; \
@@ -40,18 +38,18 @@
 /***********************************************************/
 
 #define HSMFUI_ERRORS \
-X( HSMFUI_ERROR_NONE                  ) \
-X( HSMFUI_ERROR_DUPLICATE_STATE       ) \
-X( HSMFUI_ERROR_DOUBLE_INITIALISATION ) \
-X( HSMFUI_ERROR_DOUBLE_ENTRY          ) \
-X( HSMFUI_ERROR_DOUBLE_EXIT           ) \
-X( HSMFUI_ERROR_INVALID_STATE         ) \
-X( HSMFUI_ERROR_SET_ACTIVE_STATE      ) \
+X( HSMFUI_ERROR_NONE                  ), \
+X( HSMFUI_ERROR_DUPLICATE_STATE       ), \
+X( HSMFUI_ERROR_DOUBLE_INITIALISATION ), \
+X( HSMFUI_ERROR_DOUBLE_ENTRY          ), \
+X( HSMFUI_ERROR_DOUBLE_EXIT           ), \
+X( HSMFUI_ERROR_INVALID_STATE         ), \
+X( HSMFUI_ERROR_SET_ACTIVE_STATE      ), \
 X( HSMFUI_ERROR_UNSPECIFIED           )
 
 enum hsmfui_error
 {
-#define X(error) error,
+#define X(error) error
 HSMFUI_ERRORS
 #undef X
 };

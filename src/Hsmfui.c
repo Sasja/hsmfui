@@ -20,7 +20,7 @@ static int hasDuplicate(  Hsmfui * top, Hsmfui * subSm );
 
 const char const * errorStrings[] =
 {
-#define X(error) #error,
+#define X(error) #error
 HSMFUI_ERRORS
 #undef X
 };
