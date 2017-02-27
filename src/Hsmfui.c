@@ -79,17 +79,17 @@ static void doForActive( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) )
 
     f( hsm );
 
-    if( hsm->isOrth )
+    if( hsm->IsOrth )
     {
-        for(i = 0; i < hsm->nChildren; i++)
+        for(i = 0; i < hsm->NChildren; i++)
         {
-            child = hsm->children[i];
+            child = hsm->Children[i];
             doForActive( child, f );
         }
     }
     else 
     {
-        child = hsm->state;
+        child = hsm->State;
         if( child != NULL ) doForActive( child, f );
     }
 }
@@ -101,9 +101,9 @@ static void doForAll( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) )
 
     f( hsm );
 
-    for(i = 0; i < hsm->nChildren; i++)
+    for(i = 0; i < hsm->NChildren; i++)
     {
-        child = hsm->children[i];
+        child = hsm->Children[i];
         doForAll( child, f );
     }
 }
@@ -114,32 +114,32 @@ static void setChildrensParent( Hsmfui * hsm )
 {
     int i;
     Hsmfui * child;
-    for( i = 0; i < hsm->nChildren; i++ )
+    for( i = 0; i < hsm->NChildren; i++ )
     {
-        child = hsm->children[i];
-        child->parent = hsm;
+        child = hsm->Children[i];
+        child->Parent = hsm;
     }
 }
 
 static void activateFirstChild( Hsmfui * hsm )
 {
-    if( !hsm->isOrth && hsm->nChildren > 0 ) hsm->state = hsm->children[0];
+    if( !hsm->IsOrth && hsm->NChildren > 0 ) hsm->State = hsm->Children[0];
 }
 
 static void ifNullSetParentsErrorHandler( Hsmfui * hsm )
 {
-    if( hsm->Error == NULL && hsm->parent != NULL ) hsm->Error = hsm->parent->Error;
+    if( hsm->Error == NULL && hsm->Parent != NULL ) hsm->Error = hsm->Parent->Error;
 }
 
 static void doInit( Hsmfui * hsm )
 {
     void (*handler)(void);
 
-    if( hsm->status == STATUS_NULL )
+    if( hsm->Status == STATUS_NULL )
     {
         handler = hsm->Init;
         if( handler != NULL) handler();
-        hsm->status = STATUS_INITIALISED;
+        hsm->Status = STATUS_INITIALISED;
     }
     else
     {
@@ -179,9 +179,9 @@ static int countSubstate( Hsmfui * hsm, Hsmfui * state)
 
     if ( hsm == state ) sum++;
 
-    for(i = 0; i < hsm->nChildren; i++)
+    for(i = 0; i < hsm->NChildren; i++)
     {
-        child = hsm->children[i];
+        child = hsm->Children[i];
         sum += countSubstate( child, state );
         if( sum > 1 ) break;    /* prevent infinite loop */
     }
@@ -200,9 +200,9 @@ static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
     }
     else
     {
-        for(i = 0; i < subSm->nChildren; i++)
+        for(i = 0; i < subSm->NChildren; i++)
         {
-            child = subSm->children[i];
+            child = subSm->Children[i];
             if( hasDuplicate( top, child ) )
             {
                 result = 1;
@@ -212,7 +212,7 @@ static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
     }
 
     #ifdef DEBUG
-    /* printf("%s(%s,%s) = %d\n", __FUNCTION__, top->name, subSm->name, result); */
+    /* printf("%s(%s,%s) = %d\n", __FUNCTION__, top->Name, subSm->Name, result); */
     #endif
     
     return result;

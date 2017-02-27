@@ -153,31 +153,31 @@ void test_Init_should_set_all_parentpointers( void )
 {
     HSM_DEFINITION
     
-    #define X(s) TEST_ASSERT_EQUAL(NULL, s.parent);
+    #define X(s) TEST_ASSERT_EQUAL(NULL, s.Parent);
     ALL_SM
     #undef X
 
     hsmfui_Init( &sm );
 
-    TEST_ASSERT_EQUAL(NULL,     sm.parent);
+    TEST_ASSERT_EQUAL(NULL,     sm.Parent);
 
-    TEST_ASSERT_EQUAL(&sm,      one.parent);
-    TEST_ASSERT_EQUAL(&sm,      two.parent);
-    TEST_ASSERT_EQUAL(&sm,      three.parent);
+    TEST_ASSERT_EQUAL(&sm,      one.Parent);
+    TEST_ASSERT_EQUAL(&sm,      two.Parent);
+    TEST_ASSERT_EQUAL(&sm,      three.Parent);
 
-    TEST_ASSERT_EQUAL(&two,     two_a.parent);
-    TEST_ASSERT_EQUAL(&two,     two_b.parent);
+    TEST_ASSERT_EQUAL(&two,     two_a.Parent);
+    TEST_ASSERT_EQUAL(&two,     two_b.Parent);
 
-    TEST_ASSERT_EQUAL(&three,   three_a.parent);
-    TEST_ASSERT_EQUAL(&three,   three_b.parent);
-    TEST_ASSERT_EQUAL(&three,   three_c.parent);
+    TEST_ASSERT_EQUAL(&three,   three_a.Parent);
+    TEST_ASSERT_EQUAL(&three,   three_b.Parent);
+    TEST_ASSERT_EQUAL(&three,   three_c.Parent);
 
-    TEST_ASSERT_EQUAL(&two_a,   two_a_1.parent);
-    TEST_ASSERT_EQUAL(&two_a,   two_a_2.parent);
-    TEST_ASSERT_EQUAL(&two_a,   two_a_3.parent);
+    TEST_ASSERT_EQUAL(&two_a,   two_a_1.Parent);
+    TEST_ASSERT_EQUAL(&two_a,   two_a_2.Parent);
+    TEST_ASSERT_EQUAL(&two_a,   two_a_3.Parent);
 
-    TEST_ASSERT_EQUAL(&three_a, three_a_1.parent);
-    TEST_ASSERT_EQUAL(&three_a, three_a_2.parent);
+    TEST_ASSERT_EQUAL(&three_a, three_a_1.Parent);
+    TEST_ASSERT_EQUAL(&three_a, three_a_2.Parent);
 
 }
 
@@ -185,27 +185,27 @@ void test_Init_should_set_all_states( void )
 {
     HSM_DEFINITION
 
-    #define X(s) TEST_ASSERT_EQUAL(NULL, s.state);
+    #define X(s) TEST_ASSERT_EQUAL(NULL, s.State);
     ALL_SM
     #undef X
 
     hsmfui_Init( &sm );
 
-    TEST_ASSERT_EQUAL(&one, sm.state);
+    TEST_ASSERT_EQUAL(&one, sm.State);
 
-    TEST_ASSERT_EQUAL(NULL,       one.state);
-    TEST_ASSERT_EQUAL(&two_a,     two.state);
-    TEST_ASSERT_EQUAL(NULL,       three.state); /* orthogonal node */
+    TEST_ASSERT_EQUAL(NULL,       one.State);
+    TEST_ASSERT_EQUAL(&two_a,     two.State);
+    TEST_ASSERT_EQUAL(NULL,       three.State); /* orthogonal node */
 
-    TEST_ASSERT_EQUAL(&two_a_1,   two_a.state);
-    TEST_ASSERT_EQUAL(NULL,       two_b.state);
+    TEST_ASSERT_EQUAL(&two_a_1,   two_a.State);
+    TEST_ASSERT_EQUAL(NULL,       two_b.State);
 
-    TEST_ASSERT_EQUAL(&three_a_1, three_a.state);
-    TEST_ASSERT_EQUAL(NULL,       three_b.state);
-    TEST_ASSERT_EQUAL(NULL,       three_c.state);
+    TEST_ASSERT_EQUAL(&three_a_1, three_a.State);
+    TEST_ASSERT_EQUAL(NULL,       three_b.State);
+    TEST_ASSERT_EQUAL(NULL,       three_c.State);
 
-    TEST_ASSERT_EQUAL(NULL,       three_a_1.state);
-    TEST_ASSERT_EQUAL(NULL,       three_a_2.state);
+    TEST_ASSERT_EQUAL(NULL,       three_a_1.State);
+    TEST_ASSERT_EQUAL(NULL,       three_a_2.State);
 
 }
 
@@ -226,15 +226,15 @@ void test_Act_should_propagate( void )
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("11000000000000", log_Act);
 
-    sm.state = &two;
+    sm.State = &two;
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("21111000000000", log_Act);
 
-    sm.state = &three;  /* orthogonal node! */
+    sm.State = &three;  /* orthogonal node! */
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("31111000111011", log_Act);
 
-    three_a.state = &three_a_2;
+    three_a.State = &three_a_2;
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("41111000221122", log_Act);
 }
@@ -267,7 +267,7 @@ void test_Ent_should_propagate_B( void )
     hsmfui_Init( &sm );
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Ent);
 
-    sm.state = &two;
+    sm.State = &two;
     hsmfui_Ent( &sm );
     TEST_ASSERT_EQUAL_STRING("10111000000000", log_Ent);
 }
@@ -284,7 +284,7 @@ void test_Ent_should_propagate_C( void )
     hsmfui_Init( &sm );
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Ent);
 
-    sm.state = &three;  /* orthogonal node! */
+    sm.State = &three;  /* orthogonal node! */
     hsmfui_Ent( &sm );
     TEST_ASSERT_EQUAL_STRING("10000000111011", log_Ent);
 }
@@ -317,7 +317,7 @@ void test_Exi_should_propagate_B( void )
     hsmfui_Init( &sm );
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
 
-    sm.state = &two;
+    sm.State = &two;
     hsmfui_Exi( &sm );
     TEST_ASSERT_EQUAL_STRING("10111000000000", log_Exi);
 }
@@ -334,7 +334,7 @@ void test_Exi_should_propagate_C( void )
     hsmfui_Init( &sm );
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
 
-    sm.state = &three;  /* orthogonal node! */
+    sm.State = &three;  /* orthogonal node! */
     hsmfui_Exi( &sm );
     TEST_ASSERT_EQUAL_STRING("10000000111011", log_Exi);
 }
@@ -570,11 +570,11 @@ void test_SetState_should_act_immediately( void )
     hsmfui_Init( &sm );
 
     hsmfui_SetState( &sm, &three);
-    TEST_ASSERT_EQUAL_STRING( three.name, sm.state->name );
+    TEST_ASSERT_EQUAL_STRING( three.Name, sm.State->Name );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_NONE, log_Error_value);
 
     hsmfui_SetState( &two_a, &two_a_3);
-    TEST_ASSERT_EQUAL_STRING( two_a_3.name, two_a.state->name );
+    TEST_ASSERT_EQUAL_STRING( two_a_3.Name, two_a.State->Name );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_NONE, log_Error_value);
 }
 
@@ -588,7 +588,7 @@ void test_SetState_after_Ent_should_refuse_and_error( void )
 
     clearLogs();
     hsmfui_SetState( &sm, &three);
-    TEST_ASSERT_EQUAL_STRING( one.name, sm.state->name );
+    TEST_ASSERT_EQUAL_STRING( one.Name, sm.State->Name );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_SET_ACTIVE_STATE, log_Error_value);
 
     clearLogs();
@@ -599,7 +599,7 @@ void test_SetState_after_Ent_should_refuse_and_error( void )
 
     /* now try and set two */
     hsmfui_SetState( &two, &two_b);
-    TEST_ASSERT_EQUAL_STRING( two_a.name, two.state->name );
+    TEST_ASSERT_EQUAL_STRING( two_a.Name, two.State->Name );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_SET_ACTIVE_STATE, log_Error_value);
 }
 

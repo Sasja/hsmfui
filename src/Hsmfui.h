@@ -9,15 +9,15 @@
 
 #define _NODE(name, nchildren, pchildren, orth) \
     Hsmfui name = { \
-        #name,                      /* name                 */ \
-        NULL,                       /* parent               */ \
-        nchildren,                  /* nChildren            */ \
-        pchildren,                  /* children             */ \
+        #name,                      /* Name                 */ \
+        NULL,                       /* Parent               */ \
+        nchildren,                  /* NChildren            */ \
+        pchildren,                  /* Children             */ \
         NULL, NULL, NULL, NULL,     /* Init, Ent, Act, Exi  */ \
         NULL,                       /* Error                */ \
-        orth,                       /* isOrth               */ \
-        NULL,                       /* state                */ \
-        STATUS_NULL                 /* status               */ \
+        orth,                       /* IsOrth               */ \
+        NULL,                       /* State                */ \
+        STATUS_NULL                 /* Status               */ \
     };
 
 #define LEAF(name) _NODE(name, 0, NULL, 0)
@@ -63,12 +63,12 @@ enum stateStatus
 typedef struct Hsmfui Hsmfui;
 struct Hsmfui
 {
-    const char *    name;
+    const char *    Name;
 
-    Hsmfui *        parent;
+    Hsmfui *        Parent;
 
-    const int       nChildren;
-    Hsmfui * const (* const children);
+    const int       NChildren;
+    Hsmfui * const (* const Children);
 
     void (*Init) (void);
     void (*Ent)  (void);
@@ -77,11 +77,11 @@ struct Hsmfui
 
     void (*Error) (enum hsmfui_error);
 
-    const int        isOrth;
+    const int        IsOrth;
 
-    Hsmfui *         state;
+    Hsmfui *         State;
 
-    enum stateStatus status;
+    enum stateStatus Status;
 
 };
 
