@@ -6,6 +6,7 @@ static void doForAll   ( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) );
 
 static void setChildrensParent( Hsmfui * hsm );
 static void activateFirstChild( Hsmfui * hsm );
+static void ifNullSetParentsErrorHandler( Hsmfui * hsm );
 
 static void doInit( Hsmfui * hsm );
 static void doEnt( Hsmfui * hsm );
@@ -14,8 +15,6 @@ static void doExi( Hsmfui * hsm );
 
 static int countSubstate( Hsmfui * hsm, Hsmfui * state );
 static int hasDuplicate(  Hsmfui * top, Hsmfui * subSm );
-
-static void raiseError( Hsmfui * hsm, enum hsmfui_error error );
 
 /***********************************************************/
 
@@ -32,12 +31,12 @@ void hsmfui_Init( Hsmfui * hsm )
 {
     if( hasDuplicate( hsm, hsm ) )
     {
-        /* do not use raise error as parents are not defined yet */
         hsm->Error( HSMFUI_ERROR_DUPLICATE_STATE );
     }
     else
     {
         doForAll( hsm, setChildrensParent );
+        doForAll( hsm, ifNullSetParentsErrorHandler );
         doForAll( hsm, activateFirstChild );
         doForAll( hsm, doInit );
     }
@@ -127,6 +126,11 @@ static void activateFirstChild( Hsmfui * hsm )
     if( !hsm->isOrth && hsm->nChildren > 0 ) hsm->state = hsm->children[0];
 }
 
+static void ifNullSetParentsErrorHandler( Hsmfui * hsm )
+{
+    if( hsm->Error == NULL && hsm->parent != NULL ) hsm->Error = hsm->parent->Error;
+}
+
 static void doInit( Hsmfui * hsm )
 {
     void (*handler)(void);
@@ -139,7 +143,7 @@ static void doInit( Hsmfui * hsm )
     }
     else
     {
-        raiseError( hsm, HSMFUI_ERROR_DOUBLE_INITIALISATION );
+        hsm->Error( HSMFUI_ERROR_DOUBLE_INITIALISATION );
     }
 }
 
@@ -212,17 +216,4 @@ static int hasDuplicate( Hsmfui * top, Hsmfui * subSm )
     #endif
     
     return result;
-}
-
-static void raiseError( Hsmfui * hsm, enum hsmfui_error error )
-{
-    if( hsm->Error != NULL )
-    {
-        hsm->Error(error);
-    }
-    else
-    {
-        /* segfault when no parent as there is no handler for errors anyway in that case*/
-        raiseError( hsm->parent, error );
-    }
 }
