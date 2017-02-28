@@ -6,13 +6,16 @@ static void doForAll   ( Hsmfui * hsm, void ( * f ) ( Hsmfui * ) );
 
 static void setChildrensParent( Hsmfui * hsm );
 static void activateFirstChild( Hsmfui * hsm );
-static void ifNullSetParentsErrorHandler( Hsmfui * hsm );
+static void setErrorHandler( Hsmfui * hsm );
 
 static void doInit( Hsmfui * hsm );
 static void doEnt( Hsmfui * hsm );
 static void doAct( Hsmfui * hsm );
 static void doExi( Hsmfui * hsm );
 
+static void defaultErrorHandler( enum hsmfui_error );
+
+static int isChild( Hsmfui * father, Hsmfui * child);
 static int countSubstate( Hsmfui * hsm, Hsmfui * state );
 static int hasDuplicate(  Hsmfui * top, Hsmfui * subSm );
 
@@ -36,7 +39,7 @@ void hsmfui_Init( Hsmfui * hsm )
     else
     {
         doForAll( hsm, setChildrensParent );
-        doForAll( hsm, ifNullSetParentsErrorHandler );
+        doForAll( hsm, setErrorHandler );
         doForAll( hsm, activateFirstChild );
         doForAll( hsm, doInit );
     }
@@ -57,6 +60,11 @@ void hsmfui_Exi( Hsmfui * hsm )
     doForActive( hsm, doExi );
 }
 
+static void defaultErrorHandler( enum hsmfui_error error )
+{
+    /* scratch your nose */
+}
+
 const char * const hsmfui_getErrorString( enum hsmfui_error error)
 {
     return errorStrings[error];
@@ -64,10 +72,40 @@ const char * const hsmfui_getErrorString( enum hsmfui_error error)
 
 void hsmfui_SetState( Hsmfui * hsm, Hsmfui * state )
 {
+    if( hsm->Status == STATUS_INITIALISED )
+    {
+        if( !hsm->IsOrth && isChild(hsm, state) )
+        {
+            hsm->State = state;
+        }
+        else
+        {
+            hsm->Error( HSMFUI_ERROR_INVALID_STATE );
+        }
+    }
+    else
+    {
+        hsm->Error( HSMFUI_ERROR_SET_ON_WRONG_STATUS );
+    }
 }
 
 void hsmfui_Transition( Hsmfui * hsm, Hsmfui * state )
 {
+    if( hsm->Status == STATUS_ENTERED )
+    {
+        if( !hsm->IsOrth && isChild(hsm, state) )
+        {
+            /* TODO schedule transition */
+        }
+        else
+        {
+            hsm->Error( HSMFUI_ERROR_INVALID_STATE );
+        }
+    }
+    else
+    {
+        hsm->Error( HSMFUI_ERROR_TRANSITION_ON_WRONG_STATUS );
+    }
 }
 
 /***********************************************************/
@@ -126,9 +164,19 @@ static void activateFirstChild( Hsmfui * hsm )
     if( !hsm->IsOrth && hsm->NChildren > 0 ) hsm->State = hsm->Children[0];
 }
 
-static void ifNullSetParentsErrorHandler( Hsmfui * hsm )
+static void setErrorHandler( Hsmfui * hsm )
 {
-    if( hsm->Error == NULL && hsm->Parent != NULL ) hsm->Error = hsm->Parent->Error;
+    if( hsm->Error == NULL )
+    {
+        if(hsm->Parent != NULL && hsm->Parent->Error!= NULL) 
+        {
+            hsm->Error = hsm->Parent->Error;
+        }
+        else
+        {
+            hsm->Error = defaultErrorHandler;
+        }
+    }
 }
 
 static void doInit( Hsmfui * hsm )
@@ -137,9 +185,9 @@ static void doInit( Hsmfui * hsm )
 
     if( hsm->Status == STATUS_NULL )
     {
+        hsm->Status = STATUS_INITIALISED;
         handler = hsm->Init;
         if( handler != NULL) handler();
-        hsm->Status = STATUS_INITIALISED;
     }
     else
     {
@@ -150,25 +198,59 @@ static void doInit( Hsmfui * hsm )
 static void doEnt( Hsmfui * hsm )
 {
     void (*handler)(void);
-
-    handler = hsm->Ent;
-    if( handler != NULL) handler();
+    
+    if( hsm->Status == STATUS_INITIALISED )
+    {
+        hsm->Status = STATUS_ENTERED;
+        handler = hsm->Ent;
+        if( handler != NULL) handler();
+    }
+    else
+    {
+        hsm->Error( HSMFUI_ERROR_DOUBLE_ENTRY );
+    }
 }
 
 static void doAct( Hsmfui * hsm )
 {
     void (*handler)(void);
 
-    handler = hsm->Act;
-    if( handler != NULL) handler();
+    if( hsm->Status == STATUS_ENTERED )
+    {
+        handler = hsm->Act;
+        if( handler != NULL) handler();
+    }
+    else
+    {
+        hsm->Error( HSMFUI_ERROR_ACT_WITHOUT_ENT );
+    }
 }
 
 static void doExi( Hsmfui * hsm )
 {
     void (*handler)(void);
+    
+    if( hsm->Status == STATUS_ENTERED )
+    {
+        hsm->Status = STATUS_INITIALISED;
+        handler = hsm->Exi;
+        if( handler != NULL) handler();
+    }
+    else
+    {
+        hsm->Error( HSMFUI_ERROR_DOUBLE_EXIT );
+    }
+}
 
-    handler = hsm->Exi;
-    if( handler != NULL) handler();
+static int isChild( Hsmfui * father, Hsmfui * child)
+{
+    int i;
+
+    for(i = 0; i < father->NChildren; i++)
+    {
+        if( child == father->Children[i] ) return 1;
+    }
+    return 0;
 }
 
 static int countSubstate( Hsmfui * hsm, Hsmfui * state)

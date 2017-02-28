@@ -38,14 +38,16 @@
 /***********************************************************/
 
 #define HSMFUI_ERRORS \
-X( HSMFUI_ERROR_NONE                  ), \
-X( HSMFUI_ERROR_DUPLICATE_STATE       ), \
-X( HSMFUI_ERROR_DOUBLE_INITIALISATION ), \
-X( HSMFUI_ERROR_DOUBLE_ENTRY          ), \
-X( HSMFUI_ERROR_DOUBLE_EXIT           ), \
-X( HSMFUI_ERROR_INVALID_STATE         ), \
-X( HSMFUI_ERROR_SET_ACTIVE_STATE      ), \
-X( HSMFUI_ERROR_UNSPECIFIED           )
+X( HSMFUI_ERROR_NONE                         ), \
+X( HSMFUI_ERROR_DUPLICATE_STATE              ), \
+X( HSMFUI_ERROR_DOUBLE_INITIALISATION        ), \
+X( HSMFUI_ERROR_DOUBLE_ENTRY                 ), \
+X( HSMFUI_ERROR_DOUBLE_EXIT                  ), \
+X( HSMFUI_ERROR_INVALID_STATE                ), \
+X( HSMFUI_ERROR_SET_ON_WRONG_STATUS          ), \
+X( HSMFUI_ERROR_TRANSITION_ON_WRONG_STATUS   ), \
+X( HSMFUI_ERROR_ACT_WITHOUT_ENT              ), \
+X( HSMFUI_ERROR_UNSPECIFIED                  )
 
 enum hsmfui_error
 {

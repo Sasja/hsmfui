@@ -181,6 +181,7 @@ void test_Init_should_set_all_parentpointers( void )
 
 }
 
+
 void test_Init_should_set_all_states( void )
 {
     HSM_DEFINITION
@@ -209,6 +210,30 @@ void test_Init_should_set_all_states( void )
 
 }
 
+void test_Init_should_set_defaulterrorhandler( void )
+{
+    HSM_DEFINITION
+
+    hsmfui_Init( &sm );
+
+    #define X(s) TEST_ASSERT_NOT_EQUAL(NULL , s.Error);
+    ALL_SM
+    #undef X
+}
+
+void test_Init_should_propagate_errorhandlers( void )
+{
+    HSM_DEFINITION
+
+    sm.Error = error_log;
+    hsmfui_Init( &sm );
+
+    #define X(s) TEST_ASSERT_EQUAL(error_log, s.Error);
+    ALL_SM
+    #undef X
+}
+
+
 void test_Act_should_propagate( void )
 {
     HSM_DEFINITION
@@ -220,21 +245,28 @@ void test_Act_should_propagate( void )
     #undef X
 
     hsmfui_Init( &sm );
+    hsmfui_Ent( &sm );
 
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Act);
 
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("11000000000000", log_Act);
 
+    hsmfui_Exi( &sm );
     sm.State = &two;
+    hsmfui_Ent( &sm );
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("21111000000000", log_Act);
 
+    hsmfui_Exi( &sm );
     sm.State = &three;  /* orthogonal node! */
+    hsmfui_Ent( &sm );
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("31111000111011", log_Act);
 
+    hsmfui_Exi( &sm );
     three_a.State = &three_a_2;
+    hsmfui_Ent( &sm );
     hsmfui_Act( &sm );
     TEST_ASSERT_EQUAL_STRING("41111000221122", log_Act);
 }
@@ -301,6 +333,7 @@ void test_Exi_should_propagate_A( void )
     hsmfui_Init( &sm );
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
 
+    hsmfui_Ent( &sm );
     hsmfui_Exi( &sm );
     TEST_ASSERT_EQUAL_STRING("11000000000000", log_Exi);
 }
@@ -318,6 +351,7 @@ void test_Exi_should_propagate_B( void )
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
 
     sm.State = &two;
+    hsmfui_Ent( &sm );
     hsmfui_Exi( &sm );
     TEST_ASSERT_EQUAL_STRING("10111000000000", log_Exi);
 }
@@ -335,6 +369,7 @@ void test_Exi_should_propagate_C( void )
     TEST_ASSERT_EQUAL_STRING("00000000000000", log_Exi);
 
     sm.State = &three;  /* orthogonal node! */
+    hsmfui_Ent( &sm );
     hsmfui_Exi( &sm );
     TEST_ASSERT_EQUAL_STRING("10000000111011", log_Exi);
 }
@@ -522,34 +557,48 @@ void test_Transition_should_check_input( void )
     sm.Error = error_log;
 
     hsmfui_Init( &sm );
+    hsmfui_Ent( &sm );
 
     /* some valid requests */
     hsmfui_Transition( &sm, &three );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_NONE, log_Error_value);
+    hsmfui_Exi( &sm );
 
+    sm.State = &two;
+    hsmfui_Ent( &sm );
     hsmfui_Transition( &two_a, &two_a_2 );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_NONE, log_Error_value);
+    hsmfui_Exi( &sm );
 
+    hsmfui_Ent( &sm );
     hsmfui_Transition( &sm, &two );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_NONE, log_Error_value);
+    hsmfui_Exi( &sm );
 
+    sm.State = &three;
+    hsmfui_Ent( &sm );
     hsmfui_Transition( &three_a, &three_a_1 );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_NONE, log_Error_value);
+    hsmfui_Exi( &sm );
 
     /* some invalids */
     clearLogs();
+    hsmfui_Ent( &sm );
     hsmfui_Transition( &sm, &sm );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_INVALID_STATE, log_Error_value);
 
     clearLogs();
+    hsmfui_Ent( &sm );
     hsmfui_Transition( &sm, &three_a );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_INVALID_STATE, log_Error_value);
 
     clearLogs();
+    hsmfui_Ent( &sm );
     hsmfui_Transition( &three, &three_a ); /* orthogonal */
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_INVALID_STATE, log_Error_value);
 
     clearLogs();
+    hsmfui_Ent( &sm );
     hsmfui_Transition( &three_a_1, NULL );
     TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_INVALID_STATE, log_Error_value);
 }
@@ -582,7 +631,7 @@ void test_SetState_after_Ent_should_refuse_and_error( void )
     clearLogs();
     hsmfui_SetState( &sm, &three);
     TEST_ASSERT_EQUAL_STRING( one.Name, sm.State->Name );
-    TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_SET_ACTIVE_STATE, log_Error_value);
+    TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_SET_ON_WRONG_STATUS , log_Error_value);
 
     clearLogs();
     /* validly set sm to two */
@@ -593,7 +642,7 @@ void test_SetState_after_Ent_should_refuse_and_error( void )
     /* now try and set two */
     hsmfui_SetState( &two, &two_b);
     TEST_ASSERT_EQUAL_STRING( two_a.Name, two.State->Name );
-    TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_SET_ACTIVE_STATE, log_Error_value);
+    TEST_ASSERT_EQUAL_ERROR( HSMFUI_ERROR_SET_ON_WRONG_STATUS, log_Error_value);
 }
 
 int main( void )
@@ -603,6 +652,8 @@ int main( void )
     RUN_TEST(test_Init_should_propagate);
     RUN_TEST(test_Init_should_set_all_parentpointers);
     RUN_TEST(test_Init_should_set_all_states);
+    RUN_TEST(test_Init_should_set_defaulterrorhandler);
+    RUN_TEST(test_Init_should_propagate_errorhandlers);
     RUN_TEST(test_Init_should_normally_not_trigger_error);
     RUN_TEST(test_Init_should_error_duplicate_states_A);
     RUN_TEST(test_Init_should_error_duplicate_states_B);
